@@ -7,6 +7,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 import user.managment.db.dao.UserDao;
 import user.managment.filter.JWTTokenNeededFilter;
+import user.managment.filter.ResponseFilter;
 
 /**
  * @author JoanVasquez
@@ -28,6 +29,7 @@ public class ApplicationApi extends ResourceConfig {
 		packages("user.managment.service", "user.managment.filter");
 		register(UserService.class);
 		register(JWTTokenNeededFilter.class);
+		register(ResponseFilter.class);
 		register(new AbstractBinder() {
 			
 			@Override

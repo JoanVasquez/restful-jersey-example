@@ -1,8 +1,6 @@
 package user.managment.service;
 
 import java.security.Key;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -60,7 +58,6 @@ public class UserService {
 	@PUT
 	public Response saveUser(@Valid @NotNull User user) throws Exception, ValidationException {
 		Response resp = null;
-
 		user.setPass(Aes256.encryption(user.getTempPass()));
 		user = userDao.saveEntity(user);
 		resp = Response.status(Response.Status.CREATED).entity(user).build();
@@ -123,11 +120,6 @@ public class UserService {
 	private String issueToken(String email) {
 		Key key = Sha256.generateKey();
 		return Jwts.builder().setSubject(email).setIssuer(uriInfo.getAbsolutePath().toString()).setIssuedAt(new Date())
-				.setExpiration(toDate(LocalDateTime.now().plusMinutes(15L))).signWith(SignatureAlgorithm.HS512, key)
-				.compact();
-	}
-
-	private Date toDate(LocalDateTime localDateTime) {
-		return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+				.signWith(SignatureAlgorithm.HS512, key).compact();
 	}
 }
