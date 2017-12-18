@@ -119,7 +119,7 @@ public class UserDao extends Query implements CrudMethod<User> {
 
 		while (resultSet.next()) {
 			User user = new User(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3),
-					resultSet.getBytes(4));
+					Aes256.decryption(new String(resultSet.getBytes(4))));
 			listUser.add(user);
 		}
 

@@ -81,7 +81,7 @@ public class UserService {
 	public Response deleteUser(@PathParam("userId") @NotNull int userId) throws Exception {
 		Response resp = null;
 		userDao.deleteEntity(userId);
-		resp = Response.status(Response.Status.NO_CONTENT).build();
+		resp = Response.status(Response.Status.OK).entity(issueToken(String.valueOf(userId))).build();
 		return resp;
 	}
 
@@ -93,7 +93,7 @@ public class UserService {
 		byte[] pass = Aes256.encryption(password);
 		User user = userDao.signIn(email, pass);
 		if (user != null)
-			resp = Response.status(Response.Status.OK).entity(issueToken(email)).build();
+			resp = Response.status(Response.Status.OK).entity(issueToken(String.valueOf(user.getUserId()))).build();
 
 		return resp;
 	}
@@ -117,9 +117,9 @@ public class UserService {
 			userDao.closeConnection();
 	}
 
-	private String issueToken(String email) {
+	private String issueToken(String userId) {
 		Key key = Sha256.generateKey();
-		return Jwts.builder().setSubject(email).setIssuer(uriInfo.getAbsolutePath().toString()).setIssuedAt(new Date())
+		return Jwts.builder().setSubject(userId).setIssuer(uriInfo.getAbsolutePath().toString()).setIssuedAt(new Date())
 				.signWith(SignatureAlgorithm.HS512, key).compact();
 	}
 }

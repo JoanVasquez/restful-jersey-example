@@ -17,7 +17,7 @@ public class User {
 	private String name;
 
     @NotNull(message = "It cannot be null")
-    @Size(min = 5, max = 30)
+    @Size(min = 5, max = 60)
     @Email(message = "{Wrong email format", regexp = "[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}")
 	private String email;
     
@@ -30,11 +30,11 @@ public class User {
 	public User() {
 	}
 
-	public User(int userId, String name, String email, byte[] pass) {
+	public User(int userId, String name, String email, String tempPass) {
 		this.userId = userId;
 		this.name = name;
 		this.email = email;
-		this.pass = pass;
+		this.tempPass = tempPass;
 	}
 
 	public int getUserId() {
