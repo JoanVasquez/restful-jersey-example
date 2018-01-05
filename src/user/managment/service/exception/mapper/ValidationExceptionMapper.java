@@ -40,7 +40,7 @@ public class ValidationExceptionMapper implements ExceptionMapper<ConstraintViol
 	private List<Error> setError(ConstraintViolationException cve) {
 		List<Error> errors = new ArrayList<Error>();
 		for (ConstraintViolation<?> cv : cve.getConstraintViolations()) {
-			Error error = new Error(400, cv.getPropertyPath().toString(), cv.getMessage());
+			Error error = new Error(400, cv.getMessage(), "");
 			errors.add(error);
 		}
 

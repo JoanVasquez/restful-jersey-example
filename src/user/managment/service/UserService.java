@@ -94,6 +94,8 @@ public class UserService {
 		User user = userDao.signIn(email, pass);
 		if (user != null)
 			resp = Response.status(Response.Status.OK).entity(issueToken(String.valueOf(user.getUserId()))).build();
+		else
+			resp = Response.status(Response.Status.NOT_FOUND).entity("Not user found").build();
 
 		return resp;
 	}

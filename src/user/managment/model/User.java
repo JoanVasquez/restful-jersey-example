@@ -12,7 +12,7 @@ public class User {
 
 	private int userId;
 	@NotNull
-	@Pattern(regexp = "^[a-zA-Z]+[\\-'\\s]?[a-zA-Z ]+$", message = "Only letters and space")
+	@Pattern(regexp = "^[a-zA-Z]+[\\-'\\s]?[a-zA-Z ]+$", message = "Only letters and space for name")
 	@Size(min = 2, max = 20)
 	private String name;
 
