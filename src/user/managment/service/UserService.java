@@ -46,32 +46,24 @@ public class UserService {
 	@GET
 	@JWTTokenNeeded
 	public Response readUsers() throws Exception {
-		Response resp = null;
 		List<User> users = userDao.getEntities();
-		GenericEntity<List<User>> entity = new GenericEntity<List<User>>(Lists.newArrayList(users)) {
-		};
-		resp = Response.status(Response.Status.OK).entity(entity).build();
-
-		return resp;
+		GenericEntity<List<User>> entity = new GenericEntity<List<User>>(Lists.newArrayList(users)) {};
+		return Response.status(Response.Status.OK).entity(entity).build();
 	}
 
 	@PUT
 	public Response saveUser(@Valid @NotNull User user) throws Exception, ValidationException {
-		Response resp = null;
 		user.setPass(Aes256.encryption(user.getTempPass()));
 		user = userDao.saveEntity(user);
-		resp = Response.status(Response.Status.CREATED).entity(user).build();
-		return resp;
+		return Response.status(Response.Status.CREATED).entity(user).build();
 	}
 
 	@POST
 	@JWTTokenNeeded
 	public Response updateUser(@Valid @NotNull User user) throws Exception, ValidationException {
-		Response resp = null;
 		user.setPass(Aes256.encryption(user.getTempPass()));
 		userDao.updateEntity(user);
-		resp = Response.status(Response.Status.OK).build();
-		return resp;
+		return Response.status(Response.Status.OK).build();
 	}
 
 	@DELETE
@@ -79,38 +71,27 @@ public class UserService {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@JWTTokenNeeded
 	public Response deleteUser(@PathParam("userId") @NotNull int userId) throws Exception {
-		Response resp = null;
 		userDao.deleteEntity(userId);
-		resp = Response.status(Response.Status.OK).entity(issueToken(String.valueOf(userId))).build();
-		return resp;
+		return Response.status(Response.Status.OK).entity(String.valueOf(userId)).build();
 	}
 
 	@POST
 	@Path("/signIn")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public Response signIn(@FormParam("email") String email, @FormParam("pass") String password) throws Exception {
-		Response resp = null;
 		byte[] pass = Aes256.encryption(password);
 		User user = userDao.signIn(email, pass);
-		if (user != null)
-			resp = Response.status(Response.Status.OK).entity(issueToken(String.valueOf(user.getUserId()))).build();
-		else
-			resp = Response.status(Response.Status.NOT_FOUND).entity("Not user found").build();
-
-		return resp;
+		return Response.status(Response.Status.OK).entity(issueToken(String.valueOf(user.getUserId()))).build();
 	}
 
 	@POST
 	@Path("/forgottenPassword")
 	@Consumes(MediaType.TEXT_PLAIN)
 	public Response forgottenPassword(@NotNull String email) throws Exception {
-		Response resp = null;
 		String pass = null;
 		pass = userDao.getPassword(email);
-		resp = Response.status(Response.Status.OK).build();
 		SendForgottenPassword.sendEmail(email, pass);
-
-		return resp;
+		return Response.status(Response.Status.OK).build();
 	}
 
 	@PreDestroy
