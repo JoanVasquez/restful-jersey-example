@@ -29,8 +29,7 @@ public class ValidationExceptionMapper implements ExceptionMapper<ConstraintViol
 	 */
 	@Override
 	public Response toResponse(ConstraintViolationException cve) {
-		GenericEntity<List<Error>> entityError = new GenericEntity<List<Error>>(Lists.newArrayList(setError(cve))) {};
-		return Response.status(Response.Status.BAD_REQUEST).entity(entityError).build();
+		return Response.status(Response.Status.BAD_REQUEST).entity(setError(cve)).build();
 	}
 
 	/**

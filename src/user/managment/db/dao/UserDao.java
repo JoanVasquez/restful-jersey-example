@@ -33,14 +33,14 @@ public class UserDao extends Query implements CrudMethod<User> {
 		if (ApplicationApi.isTest) {
 			dbConnectionProperty = new DBConnectionProperty();
 			dbConnectionProperty.setDriver("com.mysql.jdbc.Driver");// THE DRIVER - MYSQL IN THIS CASE
-			dbConnectionProperty.setUrl("jdbc:mysql://localhost:3306/usermanagment_test");// DATABASE URL
+			dbConnectionProperty.setUrl("jdbc:mysql://127.0.0.1:3306/usermanagment_test");// DATABASE URL
 			dbConnectionProperty.setUser("root");// DATABASE USER
 			dbConnectionProperty.setPassword("pass");// DATABASE PASSWORD
 			dbConnection = DBConnection.getDBConnection(dbConnectionProperty);
 		} else {
 			dbConnectionProperty = new DBConnectionProperty();
 			dbConnectionProperty.setDriver("com.mysql.jdbc.Driver");// THE DRIVER - MYSQL IN THIS CASE
-			dbConnectionProperty.setUrl("jdbc:mysql://localhost:3306/usermanagment");// DATABASE URL
+			dbConnectionProperty.setUrl("jdbc:mysql://127.0.0.1:3306/usermanagment");// DATABASE URL
 			dbConnectionProperty.setUser("root");// DATABASE USER
 			dbConnectionProperty.setPassword("pass");// DATABASE PASSWORD
 			dbConnection = DBConnection.getDBConnection(dbConnectionProperty);

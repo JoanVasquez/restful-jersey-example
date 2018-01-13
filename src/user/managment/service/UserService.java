@@ -1,8 +1,12 @@
 package user.managment.service;
 
 import java.security.Key;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PreDestroy;
 import javax.validation.Valid;
@@ -29,6 +33,7 @@ import jersey.repackaged.com.google.common.collect.Lists;
 import user.managment.db.dao.UserDao;
 import user.managment.email.SendForgottenPassword;
 import user.managment.filter.JWTTokenNeeded;
+import user.managment.model.Error;
 import user.managment.model.User;
 import user.managment.security.Aes256;
 import user.managment.security.Sha256;
@@ -47,8 +52,8 @@ public class UserService {
 	@JWTTokenNeeded
 	public Response readUsers() throws Exception {
 		List<User> users = userDao.getEntities();
-		GenericEntity<List<User>> entity = new GenericEntity<List<User>>(Lists.newArrayList(users)) {};
-		return Response.status(Response.Status.OK).entity(entity).build();
+		//GenericEntity<List<User>> entity = new GenericEntity<List<User>>(Lists.newArrayList(users)) {};
+		return Response.status(Response.Status.OK).entity(users).build();
 	}
 
 	@PUT
@@ -72,16 +77,28 @@ public class UserService {
 	@JWTTokenNeeded
 	public Response deleteUser(@PathParam("userId") @NotNull int userId) throws Exception {
 		userDao.deleteEntity(userId);
-		return Response.status(Response.Status.OK).entity(String.valueOf(userId)).build();
+		return Response.status(Response.Status.OK).build();
 	}
 
 	@POST
 	@Path("/signIn")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public Response signIn(@FormParam("email") String email, @FormParam("pass") String password) throws Exception {
+		Response resp;
 		byte[] pass = Aes256.encryption(password);
 		User user = userDao.signIn(email, pass);
-		return Response.status(Response.Status.OK).entity(issueToken(String.valueOf(user.getUserId()))).build();
+		if(user != null) {
+			Map<String, String> datas = new HashMap<String, String>();
+			datas.put("token", issueToken(String.valueOf(user.getUserId())));
+			datas.put("userId",String.valueOf(user.getUserId()));
+
+			resp =  Response.status(Response.Status.OK).entity(datas).build();
+		}
+		else {
+			System.out.println("Not Found Any User");
+			resp =  Response.status(Response.Status.NOT_FOUND).entity("User Not Found").build();
+		}
+		return resp;
 	}
 
 	@POST

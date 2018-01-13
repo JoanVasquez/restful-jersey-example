@@ -29,11 +29,8 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
 	@Override
 	public Response toResponse(Exception ex) {
 		Response.StatusType type = getStatusType(ex);
-		List<Error> errors = new ArrayList<Error>();
 		Error error = new Error(type.getStatusCode(), ex.getMessage(), "");
-		errors.add(error);
-		GenericEntity<List<Error>> entityError = new GenericEntity<List<Error>>(Lists.newArrayList(errors)) {};
-		return Response.status(type.getStatusCode()).entity(entityError).build();
+		return Response.status(type.getStatusCode()).entity(error).build();
 
 	}
 	
