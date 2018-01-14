@@ -1,17 +1,12 @@
 package user.managment.service.exception.mapper;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import jersey.repackaged.com.google.common.collect.Lists;
 import user.managment.model.Error;
 
 /**

@@ -1,8 +1,6 @@
 package user.managment.service;
 
 import java.security.Key;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -22,18 +20,15 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import jersey.repackaged.com.google.common.collect.Lists;
 import user.managment.db.dao.UserDao;
 import user.managment.email.SendForgottenPassword;
 import user.managment.filter.JWTTokenNeeded;
-import user.managment.model.Error;
 import user.managment.model.User;
 import user.managment.security.Aes256;
 import user.managment.security.Sha256;
