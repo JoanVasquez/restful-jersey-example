@@ -24,7 +24,7 @@ public class DBConnection {
 			Class.forName(dbConnectionProperties.getDriver()); // LOAD THE MYSQL DRIVER
 			connection = DriverManager.getConnection(dbConnectionProperties.getUrl(), dbConnectionProperties.getUser(),
 					dbConnectionProperties.getPassword()); // CREATE THE DATABASE CONNECTION
-
+			System.out.println("Connection established...");
 		} catch (SQLException ex) {
 			System.err.println("Connection to the DataBase failed " + ex.getMessage());
 		} catch (ClassNotFoundException e) {
