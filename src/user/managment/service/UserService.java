@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.PreDestroy;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 import javax.validation.constraints.NotNull;
@@ -23,7 +21,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import user.managment.db.dao.UserDao;
@@ -47,7 +44,6 @@ public class UserService {
 	@JWTTokenNeeded
 	public Response readUsers() throws Exception {
 		List<User> users = userDao.getEntities();
-		//GenericEntity<List<User>> entity = new GenericEntity<List<User>>(Lists.newArrayList(users)) {};
 		return Response.status(Response.Status.OK).entity(users).build();
 	}
 
@@ -63,7 +59,7 @@ public class UserService {
 	public Response updateUser(@Valid @NotNull User user) throws Exception, ValidationException {
 		user.setPass(Aes256.encryption(user.getTempPass()));
 		userDao.updateEntity(user);
-		return Response.status(Response.Status.OK).build();
+		return Response.status(Response.Status.NO_CONTENT).build();
 	}
 
 	@DELETE
@@ -72,7 +68,7 @@ public class UserService {
 	@JWTTokenNeeded
 	public Response deleteUser(@PathParam("userId") @NotNull int userId) throws Exception {
 		userDao.deleteEntity(userId);
-		return Response.status(Response.Status.OK).build();
+		return Response.status(Response.Status.NO_CONTENT).build();
 	}
 
 	@POST
@@ -86,11 +82,9 @@ public class UserService {
 			Map<String, String> datas = new HashMap<String, String>();
 			datas.put("token", issueToken(String.valueOf(user.getUserId())));
 			datas.put("userId",String.valueOf(user.getUserId()));
-
 			resp =  Response.status(Response.Status.OK).entity(datas).build();
 		}
 		else {
-			System.out.println("Not Found Any User");
 			resp =  Response.status(Response.Status.NOT_FOUND).entity("User Not Found").build();
 		}
 		return resp;
@@ -104,12 +98,6 @@ public class UserService {
 		pass = userDao.getPassword(email);
 		SendForgottenPassword.sendEmail(email, pass);
 		return Response.status(Response.Status.OK).build();
-	}
-
-	@PreDestroy
-	public void onDestroy() {
-		if (!ApplicationApi.isTest)
-			userDao.closeConnection();
 	}
 
 	private String issueToken(String userId) {

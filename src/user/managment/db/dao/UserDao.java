@@ -9,11 +9,9 @@ import java.util.List;
 
 import user.managment.crud.CrudMethod;
 import user.managment.db.DBConnection;
-import user.managment.db.DBConnectionProperty;
 import user.managment.db.query.Query;
 import user.managment.model.User;
 import user.managment.security.Aes256;
-import user.managment.service.ApplicationApi;
 
 /**
  * @author JoanVasquez A class to manipulate USER DAO or process it to the
@@ -24,28 +22,15 @@ public class UserDao extends Query implements CrudMethod<User> {
 	private DBConnection dbConnection;
 	private PreparedStatement prepareStatement;
 	private ResultSet resultSet;
-	private DBConnectionProperty dbConnectionProperty; // DATABASE PROPERTIES
 
 	/**
 	 * Constructor method - Connecting to the Database
+	 * 
+	 * @throws SQLException
+	 * @throws ClassNotFoundException
 	 */
-	public UserDao() {
-		if (ApplicationApi.isTest) {
-			dbConnectionProperty = new DBConnectionProperty();
-			dbConnectionProperty.setDriver("com.mysql.jdbc.Driver");// THE DRIVER - MYSQL IN THIS CASE
-			dbConnectionProperty.setUrl("jdbc:mysql://localhost:3306/usermanagment_test");// DATABASE URL
-			dbConnectionProperty.setUser("root");// DATABASE USER
-			dbConnectionProperty.setPassword("pass");// DATABASE PASSWORD
-			dbConnection = DBConnection.getDBConnection(dbConnectionProperty);
-		} else {
-			dbConnectionProperty = new DBConnectionProperty();
-			dbConnectionProperty.setDriver("com.mysql.jdbc.Driver");// THE DRIVER - MYSQL IN THIS CASE
-			dbConnectionProperty.setUrl("jdbc:mysql://localhost:3306/usermanagment");// DATABASE URL
-			dbConnectionProperty.setUser("root");// DATABASE USER
-			dbConnectionProperty.setPassword("pass");// DATABASE PASSWORD
-			dbConnection = DBConnection.getDBConnection(dbConnectionProperty);
-		}
-
+	public UserDao() throws ClassNotFoundException, SQLException {
+		dbConnection = DBConnection.getDBConnection();
 	}
 
 	/*
@@ -55,6 +40,7 @@ public class UserDao extends Query implements CrudMethod<User> {
 	 */
 	@Override
 	public User saveEntity(User entity) throws SQLException {
+		dbConnection.getConnection().setAutoCommit(false);
 		int userId = 0;
 		prepareStatement = dbConnection.getConnection().prepareStatement(INSERT_USER, Statement.RETURN_GENERATED_KEYS);
 		prepareStatement.setString(1, entity.getName());
@@ -62,14 +48,19 @@ public class UserDao extends Query implements CrudMethod<User> {
 		prepareStatement.setBytes(3, entity.getPass());
 
 		prepareStatement.executeUpdate();
+		dbConnection.getConnection().commit();
 		resultSet = prepareStatement.getGeneratedKeys();
 		if (resultSet.next()) {
 			userId = resultSet.getInt(1);
 			entity.setUserId(userId);
 		}
 
-		resultSet.close();
-		prepareStatement.close();
+		try {
+			if (!resultSet.isClosed() && resultSet != null)
+				resultSet.close();
+		} catch (Exception e) {
+			System.err.println("Error: " + e.getMessage());
+		}
 
 		return entity;
 	}
@@ -81,14 +72,13 @@ public class UserDao extends Query implements CrudMethod<User> {
 	 */
 	@Override
 	public void updateEntity(User entity) throws SQLException {
+		dbConnection.getConnection().setAutoCommit(false);
 		prepareStatement = dbConnection.getConnection().prepareStatement(UPDATE_USER);
 		prepareStatement.setString(1, entity.getName());
 		prepareStatement.setBytes(2, entity.getPass());
 		prepareStatement.setInt(3, entity.getUserId());
 		prepareStatement.executeUpdate();
-
-		prepareStatement.close();
-
+		dbConnection.getConnection().commit();
 	}
 
 	/*
@@ -98,12 +88,11 @@ public class UserDao extends Query implements CrudMethod<User> {
 	 */
 	@Override
 	public void deleteEntity(int id) throws SQLException {
+		dbConnection.getConnection().setAutoCommit(false);
 		prepareStatement = dbConnection.getConnection().prepareStatement(DELETE_USER);
 		prepareStatement.setInt(1, id);
 		prepareStatement.executeUpdate();
-
-		prepareStatement.close();
-
+		dbConnection.getConnection().commit();
 	}
 
 	/*
@@ -123,8 +112,12 @@ public class UserDao extends Query implements CrudMethod<User> {
 			listUser.add(user);
 		}
 
-		resultSet.close();
-		prepareStatement.close();
+		try {
+			if (!resultSet.isClosed() && resultSet != null)
+				resultSet.close();
+		} catch (Exception e) {
+			System.err.println("Error: " + e.getMessage());
+		}
 
 		return listUser;
 	}
@@ -151,8 +144,13 @@ public class UserDao extends Query implements CrudMethod<User> {
 			user.setPass(resultSet.getBytes(4));
 		}
 
-		resultSet.close();
-		prepareStatement.close();
+		try {
+			if (!resultSet.isClosed())
+				resultSet.close();
+		} catch (Exception e) {
+			System.err.println("Error: " + e.getMessage());
+		}
+
 		return user;
 	}
 
@@ -169,17 +167,13 @@ public class UserDao extends Query implements CrudMethod<User> {
 		resultSet = prepareStatement.executeQuery();
 		if (resultSet.next())
 			pass = Aes256.decryption(resultSet.getString(1));
-		resultSet.close();
-		prepareStatement.close();
 
+		try {
+			if (!resultSet.isClosed())
+				resultSet.close();
+		} catch (Exception e) {
+			System.err.println("Error: " + e.getMessage());
+		}
 		return pass;
 	}
-
-	/**
-	 * Closing Database connection
-	 */
-	public void closeConnection() {
-		dbConnection.closeConnection();
-	}
-
 }

@@ -1,71 +1,69 @@
 package user.managment.db;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
+import org.apache.commons.dbcp2.BasicDataSource;
 
 /**
- * Date 19/10/2017
- * A class to connect to the Database
+ * Date 19/10/2017 A class to connect to the Database
+ * 
  * @author JoanVasquez
  * 
  */
 public class DBConnection {
-	
+
 	private static DBConnection dbConnection; // VAR OF THIS CLASS
-	private static Connection connection; // VAR OF CONNECTION CLASS - TO CREATE THE DATABASE CONNECTION
+	private Connection connection; // VAR OF CONNECTION CLASS - TO CREATE THE DATABASE CONNECTION
+	private BasicDataSource basicDataSource;
 
 	/**
 	 * The Constructor of this class is private to use SINGLETON Pattern
-	 * @param dbConnectionProperties - Property of the connection
+	 * 
+	 * @param dbConnectionProperties
+	 *            - Property of the connection
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
 	 */
-	private DBConnection(DBConnectionProperty dbConnectionProperties) {
-		try {
-			Class.forName(dbConnectionProperties.getDriver()); // LOAD THE MYSQL DRIVER
-			connection = DriverManager.getConnection(dbConnectionProperties.getUrl(), dbConnectionProperties.getUser(),
-					dbConnectionProperties.getPassword()); // CREATE THE DATABASE CONNECTION
-			System.out.println("Connection established...");
-		} catch (SQLException ex) {
-			System.err.println("Connection to the DataBase failed " + ex.getMessage());
-		} catch (ClassNotFoundException e) {
-			System.err.println("Loading driver failed: " + e.getMessage());
+	private DBConnection() throws ClassNotFoundException, SQLException {
+		Class.forName("com.mysql.jdbc.Driver");
+		if (this.basicDataSource == null) {
+			this.basicDataSource = new BasicDataSource();
+			this.basicDataSource.setUrl("jdbc:mysql://localhost:3306/usermanagment");
+			this.basicDataSource.setUsername("root");
+			this.basicDataSource.setPassword("pass");
+			this.basicDataSource.setMinIdle(5);
+			this.basicDataSource.setMaxIdle(10);
+			this.basicDataSource.setMaxOpenPreparedStatements(100);
 		}
+		this.connection = this.basicDataSource.getConnection();
+		System.out.println("Connection established...");
 	}
 
 	/**
 	 * @param dbConnectionProperties
 	 * @return an instance of this class - singleton pattern
+	 * @throws SQLException
+	 * @throws ClassNotFoundException
 	 */
-	public synchronized static DBConnection getDBConnection(DBConnectionProperty dbConnectionProperties) {
-		if (dbConnection == null) {
-			System.out.println("New connection...");
-			dbConnection = new DBConnection(dbConnectionProperties);
+	public static DBConnection getDBConnection() throws SQLException, ClassNotFoundException {
+		try {
+			if (DBConnection.dbConnection == null) {
+				DBConnection.dbConnection = new DBConnection();
+			} else if (dbConnection.getConnection().isClosed()) {
+				DBConnection.dbConnection = new DBConnection();
+			}
+		} catch (Exception e) {
+			System.err.println("Error --> " + e.getMessage());
 		}
+
 		return dbConnection;
 	}
-	
+
 	/**
 	 * @return an instance of the class Connection to the access to the Database
 	 */
 	public Connection getConnection() {
-		return connection;
+		return this.connection;
 	}
 
-	/**
-	 * Close the Database connection
-	 */
-	public void closeConnection() {
-
-		if ((connection != null) && (dbConnection != null)) {
-			try {
-				connection.close();
-				dbConnection = null;
-			} catch (SQLException e) {
-				System.err.println("Failed to close the connection " + e.getMessage());
-			}
-		} else {
-			System.out.println("Not opened connection");
-		}
-
-	}
 }

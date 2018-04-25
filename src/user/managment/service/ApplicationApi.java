@@ -16,11 +16,6 @@ import user.managment.filter.ResponseFilter;
  */
 @ApplicationPath("/webapi")
 public class ApplicationApi extends ResourceConfig {
-	
-	/**
-	 * Boolean to check whether was ran from a JUnit context or not
-	 */
-	public static boolean isTest = false;
 
 	/**
 	 * The constructor method
