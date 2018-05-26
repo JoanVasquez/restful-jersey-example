@@ -116,7 +116,6 @@ Remember to run **maven** to install the **dependencies**.
 		</dependency>
 	</dependencies>
 ```
-
 ## Demonstration
 ![CKEditor](https://raw.githubusercontent.com/JoanVasquez/restful-jersey-example/master/1.PNG)
 ![CKEditor](https://raw.githubusercontent.com/JoanVasquez/restful-jersey-example/master/2.PNG)
