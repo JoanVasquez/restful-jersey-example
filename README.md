@@ -62,11 +62,11 @@ Remember to run **maven** to install the **dependencies**.
 			<artifactId>jersey-media-moxy</artifactId>
 			<version>2.26</version>
 		</dependency>-->
-		 <dependency>
-            <groupId>org.glassfish.jersey.media</groupId>
-            <artifactId>jersey-media-json-jackson</artifactId>
-            <version>2.25.1</version>
-        </dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
+			<version>2.25.1</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.ext/jersey-bean-validation -->
 		<dependency>
 			<groupId>org.glassfish.jersey.ext</groupId>
